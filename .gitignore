@@ -1,0 +1,17 @@
+# Archivos temporales y caché de Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Archivos generados por IDE y compilación
+.vs/
+.vscode/
+*.csproj
+*.sln
+*.slnx
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
