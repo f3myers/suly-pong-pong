@@ -8,9 +8,11 @@ public class MovimientoPelota : MonoBehaviour
     public Transform paletaDerecha;
 
     private Vector3 direccion;
+    private Camera camara;
 
     void Start()
     {
+        camara = Camera.main;
         direccion = new Vector3(0.3f, 1f, 0f).normalized;
     }
 
@@ -58,5 +60,29 @@ public class MovimientoPelota : MonoBehaviour
         }
 
         transform.position = nuevaPosicion;
+
+        // Calcular los límites horizontales visibles de la cámara.
+        if (camara != null)
+        {
+            float limiteDerecho = camara.ViewportToWorldPoint(new Vector3(1f, 0.5f, 0f)).x;
+            float limiteIzquierdo = camara.ViewportToWorldPoint(new Vector3(0f, 0.5f, 0f)).x;
+
+            // Si la pelota sale por la derecha, vuelve al centro.
+            if (transform.position.x >= limiteDerecho)
+            {
+                transform.position = Vector3.zero;
+                direccion = new Vector3(-0.3f, 1f, 0f).normalized;
+
+                Debug.Log("La pelota salió por la derecha.");
+            }
+            // Si la pelota sale por la izquierda, vuelve al centro.
+            else if (transform.position.x <= limiteIzquierdo)
+            {
+                transform.position = Vector3.zero;
+                direccion = new Vector3(0.3f, 1f, 0f).normalized;
+
+                Debug.Log("La pelota salió por la izquierda.");
+            }
+        }
     }
 }
