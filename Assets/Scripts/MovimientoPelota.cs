@@ -7,6 +7,8 @@ public class MovimientoPelota : MonoBehaviour
     public Transform paletaIzquierda;
     public Transform paletaDerecha;
 
+    public Marcador marcador;
+
     private Vector3 direccion;
     private Camera camara;
 
@@ -67,17 +69,27 @@ public class MovimientoPelota : MonoBehaviour
             float limiteDerecho = camara.ViewportToWorldPoint(new Vector3(1f, 0.5f, 0f)).x;
             float limiteIzquierdo = camara.ViewportToWorldPoint(new Vector3(0f, 0.5f, 0f)).x;
 
-            // Si la pelota sale por la derecha, vuelve al centro.
+            // Si la pelota sale por la derecha, el jugador izquierdo gana un punto.
             if (transform.position.x >= limiteDerecho)
             {
+                if (marcador != null)
+                {
+                    marcador.SumarPuntoJugador();
+                }
+
                 transform.position = Vector3.zero;
                 direccion = new Vector3(-0.3f, 1f, 0f).normalized;
 
                 Debug.Log("La pelota salió por la derecha.");
             }
-            // Si la pelota sale por la izquierda, vuelve al centro.
+            // Si la pelota sale por la izquierda, el jugador derecho gana un punto.
             else if (transform.position.x <= limiteIzquierdo)
             {
+                if (marcador != null)
+                {
+                    marcador.SumarPuntoEnemigo();
+                }
+
                 transform.position = Vector3.zero;
                 direccion = new Vector3(0.3f, 1f, 0f).normalized;
 
@@ -86,3 +98,4 @@ public class MovimientoPelota : MonoBehaviour
         }
     }
 }
+
