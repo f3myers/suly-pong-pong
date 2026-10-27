@@ -20,6 +20,11 @@ public class MovimientoPelota : MonoBehaviour
 
     void Update()
     {
+        if (marcador != null && marcador.partidaTerminada)
+    {
+        return;
+    }
+    
         Vector3 nuevaPosicion = transform.position + direccion * velocidad * Time.deltaTime;
 
         // Rebote en los bordes superior e inferior.
@@ -97,5 +102,12 @@ public class MovimientoPelota : MonoBehaviour
             }
         }
     }
+
+    public void ReiniciarPelota()
+{
+    transform.position = Vector3.zero;
+
+    direccion = new Vector3(0.3f, 1f, 0f).normalized;
+}
 }
 
