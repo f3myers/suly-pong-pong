@@ -1,8 +1,11 @@
 using UnityEngine;
+using System.Collections;
 
 public class MovimientoPelota : MonoBehaviour
 {
     public float velocidad = 5f;
+public float aceleracion = 0.5f;
+public float velocidadMaxima = 12f;
 
     public Transform paletaIzquierda;
     public Transform paletaDerecha;
@@ -11,15 +14,48 @@ public class MovimientoPelota : MonoBehaviour
 
     private Vector3 direccion;
     private Camera camara;
+    private bool esperandoSaque = false;
 
     void Start()
     {
         camara = Camera.main;
-        direccion = new Vector3(0.3f, 1f, 0f).normalized;
+        PrepararSaque();
     }
+
+void PrepararSaque()
+{
+    int lado = Random.Range(0, 2);
+
+    if (lado == 0)
+    {
+        direccion = Vector3.left;
+    }
+    else
+    {
+        direccion = Vector3.right;
+    }
+}
+
+void RebotarEnPaleta(Transform paleta, bool haciaDerecha)
+{
+    float diferencia = transform.position.y - paleta.position.y;
+
+    float porcentajeGolpe = Mathf.Clamp(diferencia / 0.9f, -1f, 1f);
+
+    float direccionX = haciaDerecha ? 1f : -1f;
+
+    direccion = new Vector3(direccionX, porcentajeGolpe * 0.8f, 0f).normalized;
+
+    velocidad = Mathf.Min(velocidad + aceleracion, velocidadMaxima);
+}
 
     void Update()
     {
+            if (esperandoSaque)
+    {
+        return;
+    }
+    
         if (marcador != null && marcador.partidaTerminada)
     {
         return;
@@ -49,9 +85,9 @@ public class MovimientoPelota : MonoBehaviour
             float distanciaY = Mathf.Abs(nuevaPosicion.y - paletaIzquierda.position.y);
 
             if (distanciaX <= 0.3f && distanciaY <= 0.9f)
-            {
-                direccion.x = Mathf.Abs(direccion.x);
-            }
+{
+    RebotarEnPaleta(paletaIzquierda, true);
+}
         }
 
         // Rebote contra la paleta derecha.
@@ -60,10 +96,10 @@ public class MovimientoPelota : MonoBehaviour
             float distanciaX = Mathf.Abs(nuevaPosicion.x - paletaDerecha.position.x);
             float distanciaY = Mathf.Abs(nuevaPosicion.y - paletaDerecha.position.y);
 
-            if (distanciaX <= 0.3f && distanciaY <= 0.9f)
-            {
-                direccion.x = -Mathf.Abs(direccion.x);
-            }
+           if (distanciaX <= 0.3f && distanciaY <= 0.9f)
+{
+    RebotarEnPaleta(paletaDerecha, false);
+}
         }
 
         transform.position = nuevaPosicion;
@@ -82,8 +118,7 @@ public class MovimientoPelota : MonoBehaviour
                     marcador.SumarPuntoJugador();
                 }
 
-                transform.position = Vector3.zero;
-                direccion = new Vector3(-0.3f, 1f, 0f).normalized;
+                ReiniciarPelota();
 
                 Debug.Log("La pelota salió por la derecha.");
             }
@@ -95,8 +130,7 @@ public class MovimientoPelota : MonoBehaviour
                     marcador.SumarPuntoEnemigo();
                 }
 
-                transform.position = Vector3.zero;
-                direccion = new Vector3(0.3f, 1f, 0f).normalized;
+                ReiniciarPelota();
 
                 Debug.Log("La pelota salió por la izquierda.");
             }
@@ -105,9 +139,21 @@ public class MovimientoPelota : MonoBehaviour
 
     public void ReiniciarPelota()
 {
+    StopAllCoroutines();
+    StartCoroutine(ReiniciarPelotaConPausa());
+}
+
+private IEnumerator ReiniciarPelotaConPausa()
+{
+    esperandoSaque = true;
+
     transform.position = Vector3.zero;
+    direccion = Vector3.zero;
+    velocidad = 5f;
 
-    direccion = new Vector3(0.3f, 1f, 0f).normalized;
+    yield return new WaitForSeconds(1f);
+
+    PrepararSaque();
+    esperandoSaque = false;
 }
 }
-

@@ -127,34 +127,38 @@ public class Marcador : MonoBehaviour
     }
 
     public void ReiniciarPartida()
+{
+    // Reactivar primero los elementos del juego.
+    if (elementosPartida != null)
     {
-        ReiniciarMarcador();
-
-        if (panelVictoria != null)
-        {
-            panelVictoria.SetActive(false);
-        }
-
-        if (textoVictoria != null)
-        {
-            textoVictoria.gameObject.SetActive(false);
-        }
-
-        if (botonReiniciar != null)
-        {
-            botonReiniciar.SetActive(false);
-        }
-
-        if (movimientoPelota != null)
-        {
-            movimientoPelota.ReiniciarPelota();
-        }
-
-        if (elementosPartida != null)
-        {
-            elementosPartida.SetActive(true);
-        }
-
-        Debug.Log("¡Nueva partida!");
+        elementosPartida.SetActive(true);
     }
+
+    // Reiniciar los puntos y el estado de la partida.
+    ReiniciarMarcador();
+
+    // Ocultar la pantalla de victoria.
+    if (panelVictoria != null)
+    {
+        panelVictoria.SetActive(false);
+    }
+
+    if (textoVictoria != null)
+    {
+        textoVictoria.gameObject.SetActive(false);
+    }
+
+    if (botonReiniciar != null)
+    {
+        botonReiniciar.SetActive(false);
+    }
+
+    // Reiniciar la pelota cuando ya están activos los elementos.
+    if (movimientoPelota != null)
+    {
+        movimientoPelota.ReiniciarPelota();
+    }
+
+    Debug.Log("¡Nueva partida!");
+}
 }
